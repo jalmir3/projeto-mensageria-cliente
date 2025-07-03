@@ -34,7 +34,7 @@ async def main():
     global me, dest
     me = input("Digite seu nome de usuário (from): ").strip()
     dest = input("Para quem você quer enviar mensagens (to): ").strip()
-    uri = "ws://localhost:8000/"
+    uri = "ws://127.0.0.1:19001/"
 
     while True:
         try:

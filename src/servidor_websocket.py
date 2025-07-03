@@ -46,8 +46,8 @@ async def handler(ws):
 
 
 async def main():
-    print("Servidor WebSocket rodando em ws://localhost:8000/")
-    async with websockets.serve(handler, "localhost", 8000):
+    print("Servidor WebSocket rodando em ws://127.0.0.1:19001/")
+    async with websockets.serve(handler, "127.0.0.1", 19001):
         await asyncio.Future()  # mantém o servidor ativo
 
 
