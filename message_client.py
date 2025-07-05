@@ -2,21 +2,20 @@
 import requests
 import time
 import sys
+from datetime import datetime
 
-SERVER_URL = "http://localhost:8080/api"
+SERVER_URL = "http://localhost:8080/api"  # Confirme esta URL conforme seu servidor
 
 
 def test_connection():
-    """Testa se o servidor está funcionando"""
+    """Testa se o servidor está funcionando usando o endpoint /receive"""
     try:
-        response = requests.get(f"{SERVER_URL}/test")
+        response = requests.get(f"{SERVER_URL}/receive")
         if response.status_code == 200:
-            data = response.json()
-            print(f"✅ {data['message']}")
+            print("✅ Conexão com o servidor estabelecida com sucesso!")
             return True
-        else:
-            print(f"❌ Erro: {response.status_code}")
-            return False
+        print(f"❌ Erro: {response.status_code}")
+        return False
     except Exception as e:
         print(f"❌ Erro de conexão: {e}")
         return False
@@ -33,11 +32,10 @@ def send_message(message, sender="Anônimo"):
 
         if response.status_code == 200:
             data = response.json()
-            print(f"✅ {data['message']}")
+            print(f"✅ Mensagem enviada! ID: {data.get('message_id', 'N/A')}")
             return True
-        else:
-            print(f"❌ Erro ao enviar: {response.status_code}")
-            return False
+        print(f"❌ Erro ao enviar: {response.status_code} - {response.text}")
+        return False
     except Exception as e:
         print(f"❌ Erro: {e}")
         return False
@@ -53,16 +51,16 @@ def receive_messages():
             messages = data['messages']
 
             if messages:
-                print(f"\n📬 Recebidas {len(messages)} mensagem(s):")
+                print(f"\n📬 Mensagens recebidas ({data.get('count', 0)}):")
                 for msg in messages:
-                    timestamp = time.strftime('%H:%M:%S', time.localtime(msg['timestamp'] / 1000))
-                    print(f"  [{timestamp}] {msg['sender']}: {msg['message']}")
+                    # Converte timestamp de milissegundos para segundos
+                    timestamp = datetime.fromtimestamp(msg['timestamp'] / 1000).strftime('%H:%M:%S')
+                    print(f"  [{timestamp}] {msg.get('sender', 'Anônimo')}: {msg.get('message', '')}")
             else:
                 print("📭 Nenhuma mensagem nova")
             return True
-        else:
-            print(f"❌ Erro ao receber: {response.status_code}")
-            return False
+        print(f"❌ Erro ao receber: {response.status_code} - {response.text}")
+        return False
     except Exception as e:
         print(f"❌ Erro: {e}")
         return False
@@ -81,13 +79,10 @@ def monitor_messages():
 
 def interactive_mode():
     """Modo interativo para enviar mensagens"""
-    print("💬 Modo interativo - Digite suas mensagens (digite 'sair' para parar)")
+    print("\n💬 Modo interativo - Digite suas mensagens (digite 'sair' para parar)")
 
     # Pedir nome do usuário
-    sender = input("Seu nome: ").strip()
-    if not sender:
-        sender = "Anônimo"
-
+    sender = input("Seu nome: ").strip() or "Anônimo"
     print(f"Olá {sender}! Comece a digitar suas mensagens:")
 
     while True:
@@ -106,37 +101,41 @@ def interactive_mode():
             break
 
 
+def print_help():
+    print("\nUso:")
+    print("  python message_client.py test          # Testa conexão")
+    print("  python message_client.py send          # Modo interativo para enviar")
+    print("  python message_client.py receive       # Recebe mensagens uma vez")
+    print("  python message_client.py monitor       # Monitora mensagens continuamente")
+    print("  python message_client.py help          # Mostra esta ajuda")
+
+
 def main():
-    if len(sys.argv) < 2:
-        print("Uso:")
-        print("  python simple_client.py test          # Testa conexão")
-        print("  python simple_client.py send          # Modo interativo para enviar")
-        print("  python simple_client.py receive       # Recebe mensagens uma vez")
-        print("  python simple_client.py monitor       # Monitora mensagens continuamente")
+    if len(sys.argv) < 2 or sys.argv[1].lower() == 'help':
+        print("🚀 Cliente de Mensagens - Compatível com Servidor Java")
+        print("-" * 45)
+        print_help()
         return
 
     command = sys.argv[1].lower()
 
-    print("🚀 Cliente de Mensagens Simples")
-    print("-" * 30)
+    print("\n🚀 Cliente de Mensagens - Compatível com Servidor Java")
+    print("-" * 45)
 
     if command == "test":
         test_connection()
-
     elif command == "send":
         if test_connection():
             interactive_mode()
-
     elif command == "receive":
         if test_connection():
             receive_messages()
-
     elif command == "monitor":
         if test_connection():
             monitor_messages()
-
     else:
         print(f"❌ Comando desconhecido: {command}")
+        print_help()
 
 
 if __name__ == "__main__":
