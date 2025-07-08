@@ -1,10 +1,9 @@
+from datetime import datetime
 import json
 import asyncio
 import websockets
 
-# Nome do usuário atual e o destinatário da conversa
 me = ""
-dest = ""
 
 
 # Função responsável por ler a entrada do usuário e enviar a mensagem para o servidor
@@ -14,13 +13,10 @@ async def send(ws):
         msg = await asyncio.to_thread(input, "Você: ")
         # Monta o payload da mensagem no formato esperado pelo servidor
         payload = {
-            "type": "message",
-            "from": me,
-            "to": dest,
+            "sender": me,
             "content": msg,
-            "encrypted": False,  # Aqui pode futuramente ser alterado para suporte a criptografia
+            "timestamp": datetime.now(),
         }
-        print("Enviando:", payload)
         # Envia a mensagem como JSON via WebSocket
         await ws.send(json.dumps(payload))
 
@@ -29,10 +25,9 @@ async def send(ws):
 async def receive(ws):
     try:
         async for msg in ws:
-            print("Recebido bruto:", msg)
             data = json.loads(msg)
             # Exibe a mensagem recebida no formato "remetente: conteúdo"
-            print(f"{data['from']}: {data['content']}")
+            print(f"{data['sender']}: {data['content']}")
     except websockets.ConnectionClosed:
         # Caso a conexão caia, mostra aviso
         print("Conexão fechada pelo servidor.")
@@ -40,11 +35,9 @@ async def receive(ws):
 
 # Função principal que gerencia a conexão e as tarefas assíncronas
 async def main():
-    global me, dest
+    global me
     # Solicita o nome do usuário e o destinatário da conversa
-    me = input("Digite seu nome de usuário (from): ").strip()
-    dest = input("Para quem você quer enviar mensagens (to): ").strip()
-
+    me = input("Digite seu nome de usuário: ").strip()
     # Endereço do servidor WebSocket
     uri = "ws://127.0.0.1:19001/"
 
