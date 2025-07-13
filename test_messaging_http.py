@@ -25,7 +25,7 @@ def test_messaging_flow():
     message = "Mensagem de teste automática"
 
     print("Enviando mensagem...")
-    message_id = send_message(sender, recipient, message)
+    send_message(sender, recipient, message)
 
     print("Aguardando processamento da fila (RabbitMQ)...")
     time.sleep(2)

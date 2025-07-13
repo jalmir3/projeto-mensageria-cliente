@@ -56,7 +56,6 @@ def on_message(message):
 def on_error(error):
     print(f"Erro WebSocket: {error}")
 
-
 class WebSocketClient:
     def __init__(self, sender, recipient):
         self.sender = sender
@@ -117,6 +116,8 @@ def menu_websocket(sender, recipient):
     client = WebSocketClient(sender, recipient)
     client.connect()
 
+def on_close(ws, code, msg):
+    print("Conexão do remetente encerrada.")
 
 def main():
     print("Cliente de Mensagens")
