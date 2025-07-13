@@ -45,7 +45,7 @@ class HttpClient:
             print(f"Erro ao receber via HTTP: {e}")
 
 
-def on_message(ws, message):
+def on_message(message):
     try:
         data = json.loads(message)
         timestamp = datetime.fromtimestamp(data['timestamp'] / 1000).strftime('%H:%M:%S')
@@ -53,12 +53,7 @@ def on_message(ws, message):
     except Exception as e:
         print(f"Erro ao processar mensagem: {e}")
 
-
-def on_close(ws, code, msg):
-    print("Conexão WebSocket encerrada.")
-
-
-def on_error(ws, error):
+def on_error(error):
     print(f"Erro WebSocket: {error}")
 
 
