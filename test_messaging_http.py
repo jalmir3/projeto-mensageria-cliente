@@ -11,7 +11,7 @@ def send_message(sender, recipient, message):
     }
     response = requests.post(f"{SERVER_URL}/send-to", json=payload)
     assert response.status_code == 200, f"Erro ao enviar mensagem: {response.text}"
-    print("✅ Mensagem enviada com sucesso.")
+    print("Mensagem enviada com sucesso.")
     return response.json().get("message_id")
 
 def get_messages_for(recipient):
@@ -24,13 +24,13 @@ def test_messaging_flow():
     recipient = "TesterB"
     message = "Mensagem de teste automática"
 
-    print("🔄 Enviando mensagem...")
+    print("Enviando mensagem...")
     message_id = send_message(sender, recipient, message)
 
-    print("🕒 Aguardando processamento da fila (RabbitMQ)...")
+    print("Aguardando processamento da fila (RabbitMQ)...")
     time.sleep(2)
 
-    print("📥 Verificando mensagens recebidas...")
+    print("Verificando mensagens recebidas...")
     messages = get_messages_for(recipient)
 
     found = any(
@@ -40,8 +40,8 @@ def test_messaging_flow():
         for msg in messages
     )
 
-    assert found, "❌ Mensagem esperada não foi encontrada!"
-    print("✅ Teste passou: mensagem entregue e recebida corretamente.")
+    assert found, "Mensagem esperada não foi encontrada!"
+    print("Teste passou: mensagem entregue e recebida corretamente.")
 
 if __name__ == "__main__":
     test_messaging_flow()

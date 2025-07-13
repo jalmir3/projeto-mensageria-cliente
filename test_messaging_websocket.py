@@ -13,20 +13,19 @@ received_message = None
 
 
 def receiver_thread():
-    """Conecta como RECIPIENT e escuta mensagens"""
     def on_message(ws, message):
         global received_message
         data = json.loads(message)
         if data.get("sender") == SENDER and data.get("message") == MESSAGE:
             received_message = data
-            print("✅ Mensagem recebida corretamente!")
+            print("Mensagem recebida corretamente!")
             ws.keep_running = False
 
     def on_error(ws, error):
-        print(f"❌ Erro WebSocket no receptor: {error}")
+        print(f"Erro WebSocket no receptor: {error}")
 
     def on_close(ws, code, msg):
-        print("🔌 Conexão do receptor encerrada.")
+        print("Conexão do receptor encerrada.")
 
     ws = websocket.WebSocketApp(
         f"{WS_URL}?user={RECIPIENT}",
@@ -39,9 +38,8 @@ def receiver_thread():
 
 
 def sender_thread():
-    """Conecta como SENDER e envia mensagem"""
     def on_open(ws):
-        print("📤 Conexão do remetente aberta. Enviando mensagem...")
+        print("Conexão do remetente aberta. Enviando mensagem...")
         payload = {
             "sender": SENDER,
             "recipient": RECIPIENT,
@@ -51,11 +49,11 @@ def sender_thread():
         time.sleep(0.5)
         ws.keep_running = False
 
-    def on_error(ws, error):
-        print(f"❌ Erro WebSocket no remetente: {error}")
+    def on_error(error):
+        print(f"Erro WebSocket no remetente: {error}")
 
     def on_close(ws, code, msg):
-        print("🔌 Conexão do remetente encerrada.")
+        print("Conexão do remetente encerrada.")
 
     ws = websocket.WebSocketApp(
         f"{WS_URL}?user={SENDER}",
@@ -70,7 +68,7 @@ def sender_thread():
 def test_websocket_messaging():
     global received_message
 
-    print("🚀 Iniciando teste de WebSocket...")
+    print("Iniciando teste de WebSocket...")
 
     receiver = threading.Thread(target=receiver_thread)
     receiver.start()
@@ -85,12 +83,12 @@ def test_websocket_messaging():
         time.sleep(1)
         timeout -= 1
 
-    assert received_message is not None, "❌ Mensagem não recebida via WebSocket!"
+    assert received_message is not None, "Mensagem não recebida via WebSocket!"
     assert received_message.get("sender") == SENDER
     assert received_message.get("recipient") == RECIPIENT
     assert received_message.get("message") == MESSAGE
 
-    print("✅ Teste WebSocket concluído com sucesso.")
+    print("Teste WebSocket concluído com sucesso.")
 
 
 if __name__ == "__main__":
